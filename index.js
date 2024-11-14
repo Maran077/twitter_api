@@ -17,15 +17,15 @@ const reddit = new snoowrap({
   password: process.env.PASSWORD || "",
 });
 
-async function deletePicture(fileName) {
-  fs.unlink(fileName, (err) => {
-    if (err) {
-      console.error("Error deleting file:", err);
-    } else {
-      console.log(`File ${fileName} deleted successfully.`);
-    }
-  });
-}
+// async function deletePicture(fileName) {
+//   fs.unlink(fileName, (err) => {
+//     if (err) {
+//       console.error("Error deleting file:", err);
+//     } else {
+//       console.log(`File ${fileName} deleted successfully.`);
+//     }
+//   });
+// }
 
 // let previousUrl = "";
 
@@ -130,7 +130,7 @@ async function uploadMeme() {
     console.log("upload the meme successfully");
     r.success = true;
     r.message = "upload the meme successfully";
-    await deletePicture(fileName);
+    // await deletePicture(fileName);
   } catch (error) {
     console.log(error);
   }
