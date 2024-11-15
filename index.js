@@ -17,20 +17,20 @@ const reddit = new snoowrap({
   password: process.env.PASSWORD || "",
 });
 
-// async function deletePicture(fileName) {
-//   fs.unlink(fileName, (err) => {
-//     if (err) {
-//       console.error("Error deleting file:", err);
-//     } else {
-//       console.log(`File ${fileName} deleted successfully.`);
-//     }
-//   });
-// }
+async function deletePicture(fileName) {
+  fs.unlink(fileName, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+    } else {
+      console.log(`File ${fileName} deleted successfully.`);
+    }
+  });
+}
 
-// let previousUrl = "";
+let previousUrl = "";
 
 async function getPicture() {
-  const r = { success: false, fileName: "", text: "" };
+  const r = { success: false, fileName: "", text: "", err: "" };
   const subReddit = process.env.SUB_REDDIT;
   return reddit
     .getSubreddit(subReddit)
@@ -44,10 +44,10 @@ async function getPicture() {
 
         // Download the image if it has a valid extension
         if (
-          imageUrl.endsWith(".jpg") ||
-          imageUrl.endsWith(".png") ||
-          imageUrl.endsWith(".jpeg")
-          //   imageUrl !== previousUrl
+          (imageUrl.endsWith(".jpg") ||
+            imageUrl.endsWith(".png") ||
+            imageUrl.endsWith(".jpeg")) &&
+          imageUrl !== previousUrl
         ) {
           const fileName = "meme.jpg";
           const file = fs.createWriteStream(fileName);
@@ -70,15 +70,18 @@ async function getPicture() {
                 fs.unlink(fileName, () => {
                   console.error("Error downloading image:", err);
                 });
-                reject(err);
+                r.err = "Error downloading image";
+                reject(r);
               });
           });
         } else {
           console.log("No image found in the post.");
+          r.err = "No image found in the post.";
           return r;
         }
       } else {
         console.log("No posts found.");
+        r.err = "No posts found.";
         return r;
       }
     })
@@ -91,12 +94,13 @@ async function getPicture() {
 async function uploadMeme() {
   const r = { success: false, message: "something wrong" };
   try {
-    const { fileName, success, text } = await getPicture(); // Download image
+    const { fileName, success, text, err } = await getPicture(); // Download image
     console.log(fileName, success, text);
 
     if (!success) {
       console.log("Download failed");
-      return;
+      r.message = err;
+      return r;
     } // Exit if download fails
     console.log("start");
     const appKey = process.env.APP_KEY;
@@ -107,7 +111,8 @@ async function uploadMeme() {
       console.log(
         "Please set the environment variables APP_KEY, APP_SECRECT, ACCESS_TOKEN, ACCESS_SECRECT"
       );
-      return;
+      r.message = "Please set the environment variables";
+      return r;
     }
 
     const twitterClient = new TwitterApi({
@@ -130,12 +135,13 @@ async function uploadMeme() {
     console.log("upload the meme successfully");
     r.success = true;
     r.message = "upload the meme successfully";
-    // await deletePicture(fileName);
+    await deletePicture(fileName);
+    return r;
   } catch (error) {
     console.log(error);
+    r.message = error?.message || "Something wrong";
+    return r;
   }
-
-  return r;
 }
 
 // function main() {
