@@ -139,7 +139,7 @@ async function uploadMeme() {
     return r;
   } catch (error) {
     // console.log(error);
-    r.message = error?.message || "Something wrong";
+    r.message = "Something wrong";
     return r;
   }
 }
