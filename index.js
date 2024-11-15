@@ -20,9 +20,9 @@ const reddit = new snoowrap({
 async function deletePicture(fileName) {
   fs.unlink(fileName, (err) => {
     if (err) {
-      console.error("Error deleting file:", err);
+      // console.error("Error deleting file:", err);
     } else {
-      console.log(`File ${fileName} deleted successfully.`);
+      // console.log(`File ${fileName} deleted successfully.`);
     }
   });
 }
@@ -40,7 +40,7 @@ async function getPicture() {
         const post = posts[0];
         const imageUrl = post.url; // Get the image URL from the post
         const text = post.title;
-        console.log(`Image URL: ${imageUrl}`);
+        // console.log(`Image URL: ${imageUrl}`);
 
         // Download the image if it has a valid extension
         if (
@@ -61,26 +61,26 @@ async function getPicture() {
                     r.fileName = fileName;
                     r.success = true;
                     r.text = text;
-                    console.log("Image downloaded successfully.");
+                    // console.log("Image downloaded successfully.");
                     resolve(r);
                   });
                 });
               })
               .on("error", (err) => {
                 fs.unlink(fileName, () => {
-                  console.error("Error downloading image:", err);
+                  // console.error("Error downloading image:", err);
                 });
                 r.err = "Error downloading image";
                 reject(r);
               });
           });
         } else {
-          console.log("No image found in the post.");
+          // console.log("No image found in the post.");
           r.err = "No image found in the post.";
           return r;
         }
       } else {
-        console.log("No posts found.");
+        // console.log("No posts found.");
         r.err = "No posts found.";
         return r;
       }
@@ -95,22 +95,22 @@ async function uploadMeme() {
   const r = { success: false, message: "something wrong" };
   try {
     const { fileName, success, text, err } = await getPicture(); // Download image
-    console.log(fileName, success, text);
+    // console.log(fileName, success, text);
 
     if (!success) {
-      console.log("Download failed");
+      // console.log("Download failed");
       r.message = err;
       return r;
     } // Exit if download fails
-    console.log("start");
+    // console.log("start");
     const appKey = process.env.APP_KEY;
     const appSecret = process.env.APP_SECRECT;
     const accessToken = process.env.ACCESS_TOKEN;
     const accessSecret = process.env.ACCESS_SECRECT;
     if (!appKey || !appSecret || !accessToken || !accessSecret) {
-      console.log(
-        "Please set the environment variables APP_KEY, APP_SECRECT, ACCESS_TOKEN, ACCESS_SECRECT"
-      );
+      // console.log(
+      //   "Please set the environment variables APP_KEY, APP_SECRECT, ACCESS_TOKEN, ACCESS_SECRECT"
+      // );
       r.message = "Please set the environment variables";
       return r;
     }
@@ -132,13 +132,13 @@ async function uploadMeme() {
       },
     ]);
 
-    console.log("upload the meme successfully");
+    // console.log("upload the meme successfully");
     r.success = true;
     r.message = "upload the meme successfully";
     await deletePicture(fileName);
     return r;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     r.message = error?.message || "Something wrong";
     return r;
   }
@@ -160,5 +160,5 @@ app.get("/", async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  // console.log("Server is running on port 3000");
 });
