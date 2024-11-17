@@ -160,6 +160,10 @@ app.get("/", async (req, res) => {
   res.send(message);
 });
 
+app.get("/test", (req, res) => {
+  res.json({ success: true, message: "ok" });
+});
+
 app.listen(3000, () => {
   // console.log("Server is running on port 3000");
 });
