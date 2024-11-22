@@ -157,7 +157,7 @@ async function uploadMeme() {
 app.get("/", async (req, res) => {
   const response = await uploadMeme();
   const message = response.success ? "ok" : "fail";
-  res.send(message);
+  res.json(response);
 });
 
 app.get("/test", (req, res) => {
