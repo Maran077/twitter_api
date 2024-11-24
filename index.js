@@ -92,7 +92,14 @@ async function getPicture() {
       return r;
     });
 }
-const sub_reddit = ["Memes_Of_The_Dank", "dank_meme"];
+const sub_reddit = [
+  "Memes_Of_The_Dank",
+  "dank_meme",
+  "videos",
+  "Twitter",
+  "TwitterCringe",
+  "twittermoment",
+];
 async function uploadMeme() {
   const r = { success: false, message: "something wrong" };
   try {
@@ -140,6 +147,7 @@ async function uploadMeme() {
       await reddit.getSubreddit(link).submitLink({
         title: text,
         url: twitterUrl,
+        // flairText: "anything else!",
       });
     }
     r.success = true;
