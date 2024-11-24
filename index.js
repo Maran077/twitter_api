@@ -93,12 +93,30 @@ async function getPicture() {
     });
 }
 const sub_reddit = [
-  "Memes_Of_The_Dank",
-  "dank_meme",
-  "videos",
-  "Twitter",
-  "TwitterCringe",
-  "twittermoment",
+  {
+    name: "Memes_Of_The_Dank",
+    flag: "Meme",
+  },
+  {
+    name: "dank_meme",
+    flag: "Meme",
+  },
+  {
+    name: "videos",
+    flag: "Meme",
+  },
+  {
+    name: "Twitter",
+    flag: "Meme",
+  },
+  {
+    name: "TwitterCringe",
+    flag: "Meme",
+  },
+  {
+    name: "twittermoment",
+    flag: "Meme",
+  },
 ];
 async function uploadMeme() {
   const r = { success: false, message: "something wrong" };
@@ -144,10 +162,10 @@ async function uploadMeme() {
     const twitterUrl = `https://x.com/MemeMaze121868/status/${tweetId}`;
     // console.log("upload the meme successfully");
     for (const link of sub_reddit) {
-      await reddit.getSubreddit(link).submitLink({
+      await reddit.getSubreddit(link.name).submitLink({
         title: text,
         url: twitterUrl,
-        // flairText: "anything else!",
+        flairText: link.flag,
       });
     }
     r.success = true;
