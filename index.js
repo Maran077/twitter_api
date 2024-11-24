@@ -165,7 +165,7 @@ async function uploadMeme() {
       await reddit.getSubreddit(link.name).submitLink({
         title: text,
         url: twitterUrl,
-        flairText: link.flag,
+        // flairText: link.flag,
       });
     }
     r.success = true;
