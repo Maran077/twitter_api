@@ -44,47 +44,47 @@ async function getPicture() {
         // console.log(`Image URL: ${imageUrl}`);
 
         // Download the image if it has a valid extension
-        // if (
-        //   (imageUrl.endsWith(".jpg") ||
-        //     imageUrl.endsWith(".png") ||
-        //     imageUrl.endsWith(".jpeg")) &&
-        //   imageUrl !== previousUrl
-        // ) {
-        const fileName = imageUrl;
-        const file = fs.createWriteStream(fileName);
-        //   previousUrl = imageUrl;
-        return new Promise((resolve, reject) => {
-          https
-            .get(imageUrl, (response) => {
-              response.pipe(file);
-              file.on("finish", () => {
-                file.close(() => {
-                  r.fileName = fileName;
-                  r.success = true;
-                  r.text = text;
-                  // console.log("Image downloaded successfully.");
-                  resolve(r);
+        if (
+          (imageUrl.endsWith(".jpg") ||
+            imageUrl.endsWith(".png") ||
+            imageUrl.endsWith(".jpeg")) &&
+          imageUrl !== previousUrl
+        ) {
+          const fileName = "meme.jpg";
+          const file = fs.createWriteStream(fileName);
+          //   previousUrl = imageUrl;
+          return new Promise((resolve, reject) => {
+            https
+              .get(imageUrl, (response) => {
+                response.pipe(file);
+                file.on("finish", () => {
+                  file.close(() => {
+                    r.fileName = fileName;
+                    r.success = true;
+                    r.text = text;
+                    // console.log("Image downloaded successfully.");
+                    resolve(r);
+                  });
                 });
+              })
+              .on("error", (err) => {
+                fs.unlink(fileName, () => {
+                  // console.error("Error downloading image:", err);
+                });
+                r.err = "Error downloading image";
+                reject(r);
               });
-            })
-            .on("error", (err) => {
-              fs.unlink(fileName, () => {
-                // console.error("Error downloading image:", err);
-              });
-              r.err = "Error downloading image";
-              reject(r);
-            });
-        });
+          });
+        } else {
+          // console.log("No image found in the post.");
+          r.err = "No image found in the post.";
+          return r;
+        }
       } else {
-        // console.log("No image found in the post.");
-        r.err = "No image found in the post.";
+        // console.log("No posts found.");
+        r.err = "No posts found.";
         return r;
       }
-      // } else {
-      //   // console.log("No posts found.");
-      //   r.err = "No posts found.";
-      //   return r;
-      // }
     })
     .catch((err) => {
       console.error("Error fetching posts:", err);
@@ -163,13 +163,13 @@ async function uploadMeme() {
 
 // main();
 
-app.get("/", async (req, res) => {
-  // const id = req.params.id;
-  // console.log(id);
+app.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
 
-  // if (id != "upload" || !id) {
-  //   return res.json({ success: false, message: "no query" });
-  // }
+  if (id != "upload" || !id) {
+    return res.json({ success: false, message: "no query" });
+  }
   const response = await uploadMeme();
   const message = response.success ? "ok" : "fail";
   res.json(response);
