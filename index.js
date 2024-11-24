@@ -4,10 +4,11 @@ import fs from "fs";
 import { TwitterApi } from "twitter-api-v2";
 import { config } from "dotenv";
 import express from "express";
+import cors from "cors";
 const app = express();
 
 config();
-
+app.use(cors({ origin: "*" }));
 // Reddit credentials
 const reddit = new snoowrap({
   userAgent: process.env.USER_AGENT || "",
