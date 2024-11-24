@@ -43,54 +43,55 @@ async function getPicture() {
         // console.log(`Image URL: ${imageUrl}`);
 
         // Download the image if it has a valid extension
-        if (
-          (imageUrl.endsWith(".jpg") ||
-            imageUrl.endsWith(".png") ||
-            imageUrl.endsWith(".jpeg")) &&
-          imageUrl !== previousUrl
-        ) {
-          const fileName = "meme.jpg";
-          const file = fs.createWriteStream(fileName);
-          //   previousUrl = imageUrl;
-          return new Promise((resolve, reject) => {
-            https
-              .get(imageUrl, (response) => {
-                response.pipe(file);
-                file.on("finish", () => {
-                  file.close(() => {
-                    r.fileName = fileName;
-                    r.success = true;
-                    r.text = text;
-                    // console.log("Image downloaded successfully.");
-                    resolve(r);
-                  });
+        // if (
+        //   (imageUrl.endsWith(".jpg") ||
+        //     imageUrl.endsWith(".png") ||
+        //     imageUrl.endsWith(".jpeg")) &&
+        //   imageUrl !== previousUrl
+        // ) {
+        const fileName = imageUrl;
+        const file = fs.createWriteStream(fileName);
+        //   previousUrl = imageUrl;
+        return new Promise((resolve, reject) => {
+          https
+            .get(imageUrl, (response) => {
+              response.pipe(file);
+              file.on("finish", () => {
+                file.close(() => {
+                  r.fileName = fileName;
+                  r.success = true;
+                  r.text = text;
+                  // console.log("Image downloaded successfully.");
+                  resolve(r);
                 });
-              })
-              .on("error", (err) => {
-                fs.unlink(fileName, () => {
-                  // console.error("Error downloading image:", err);
-                });
-                r.err = "Error downloading image";
-                reject(r);
               });
-          });
-        } else {
-          // console.log("No image found in the post.");
-          r.err = "No image found in the post.";
-          return r;
-        }
+            })
+            .on("error", (err) => {
+              fs.unlink(fileName, () => {
+                // console.error("Error downloading image:", err);
+              });
+              r.err = "Error downloading image";
+              reject(r);
+            });
+        });
       } else {
-        // console.log("No posts found.");
-        r.err = "No posts found.";
+        // console.log("No image found in the post.");
+        r.err = "No image found in the post.";
         return r;
       }
+      // } else {
+      //   // console.log("No posts found.");
+      //   r.err = "No posts found.";
+      //   return r;
+      // }
     })
     .catch((err) => {
       console.error("Error fetching posts:", err);
+      r.err = "Error fetching posts";
       return r;
     });
 }
-
+const sub_reddit = ["Memes_Of_The_Dank", "dank_meme"];
 async function uploadMeme() {
   const r = { success: false, message: "something wrong" };
   try {
@@ -125,14 +126,21 @@ async function uploadMeme() {
 
     const mediaId = await rwClient.v1.uploadMedia(fileName);
 
-    await rwClient.v2.tweetThread([
+    const tweet = await rwClient.v2.tweetThread([
       {
         media: { media_ids: [mediaId] },
         text,
       },
     ]);
-
+    const tweetId = tweet[0]?.data?.id || "1860506125105529233";
+    const twitterUrl = `https://x.com/MemeMaze121868/status/${tweetId}`;
     // console.log("upload the meme successfully");
+    for (const link of sub_reddit) {
+      await reddit.getSubreddit(link).submitLink({
+        title: text,
+        url: twitterUrl,
+      });
+    }
     r.success = true;
     r.message = "upload the meme successfully";
     await deletePicture(fileName);
@@ -155,6 +163,10 @@ async function uploadMeme() {
 // main();
 
 app.get("/", async (req, res) => {
+  const query = req.query;
+  if (!query?.upload) {
+    return res.json({ success: false, message: "no query" });
+  }
   const response = await uploadMeme();
   const message = response.success ? "ok" : "fail";
   res.json(response);
