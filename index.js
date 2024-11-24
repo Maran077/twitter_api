@@ -164,7 +164,9 @@ async function uploadMeme() {
 
 app.get("/:id", async (req, res) => {
   const id = req.params.id;
-  if (id != "upload" || id) {
+  console.log(id);
+
+  if (id != "upload" || !id) {
     return res.json({ success: false, message: "no query" });
   }
   const response = await uploadMeme();
