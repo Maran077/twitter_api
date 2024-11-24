@@ -163,13 +163,13 @@ async function uploadMeme() {
 
 // main();
 
-app.get("/:id", async (req, res) => {
-  const id = req.params.id;
-  console.log(id);
+app.get("/", async (req, res) => {
+  // const id = req.params.id;
+  // console.log(id);
 
-  if (id != "upload" || !id) {
-    return res.json({ success: false, message: "no query" });
-  }
+  // if (id != "upload" || !id) {
+  //   return res.json({ success: false, message: "no query" });
+  // }
   const response = await uploadMeme();
   const message = response.success ? "ok" : "fail";
   res.json(response);
