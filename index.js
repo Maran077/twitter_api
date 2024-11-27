@@ -159,15 +159,15 @@ async function uploadMeme() {
       },
     ]);
     const tweetId = tweet[0]?.data?.id || "1860506125105529233";
-    const twitterUrl = `https://x.com/MemeMaze121868/status/${tweetId}`;
+    // const twitterUrl = `https://x.com/MemeMaze121868/status/${tweetId}`;
     // console.log("upload the meme successfully");
-    for (const link of sub_reddit) {
-      await reddit.getSubreddit(link.name).submitLink({
-        title: text,
-        url: twitterUrl,
-        // flairText: link.flag,
-      });
-    }
+    // for (const link of sub_reddit) {
+    //   await reddit.getSubreddit(link.name).submitLink({
+    //     title: text,
+    //     url: twitterUrl,
+    //     // flairText: link.flag,
+    //   });
+    // }
     r.success = true;
     r.message = "upload the meme successfully";
     await deletePicture(fileName);
